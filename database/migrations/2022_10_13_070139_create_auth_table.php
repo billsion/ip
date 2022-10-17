@@ -20,8 +20,8 @@ return new class extends Migration {
             $table->string('memo', 255)->default('')->nullable(true)->comment('备注');
             $table->boolean('enabled', 2)->default(1)->nullable(false)->comment('是否开启');
 
-            $table->timestamp('created_at')->nullable(false);
-            $table->timestamp('updated_at')->nullable(false);
+            $table->timestamp('created_at')->nullable(true);
+            $table->timestamp('updated_at')->nullable(true);
         });
     }
 

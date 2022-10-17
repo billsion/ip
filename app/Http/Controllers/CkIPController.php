@@ -46,7 +46,8 @@ class CkIPController extends Controller
 
         if ($app = Auth::where('app_key', $app_key)->where('enabled', 1)->get()->toArray()) {
             //$api = 'http://127.0.0.1:8092/api/127.0.0.1'; //不包括 query params
-            $api = URL::current(); // 获取当前请求的接口地址
+            $api = $_SERVER['APP_URL'] . $_SERVER['API'] . $request->route('ip');
+            $request->merge(['ip' => $request->route('ip')]);
 
             // 计算当前的签名
             $cal_sign = base64_decode(Sign::gen($api, request()->all(), $app[0]['app_secret']));
@@ -70,27 +71,31 @@ class CkIPController extends Controller
     /**
      * 测试生成签名.
      */
-    public function gen(): JsonResponse
+    public function gen(Request $request): JsonResponse
     {
         $auth = Auth::find(1)->toArray();
+        if ($ip = $request->get('ip', '')) {
+            //计算 nonce
+            //$api = 'http://127.0.0.1:8093/api/' . $ip; //不包括 query params
+            $api = $_SERVER['APP_URL'] . $_SERVER['API'] . $ip;
+            // app key + api + nonce
+            $nonce = UUID::v3(md5($auth['app_key'] . $api . time()), Auth::rand_chars());
 
-        //计算 nonce
-        $api = 'http://127.0.0.1:8093/api/127.0.0.1'; //不包括 query params
-        // app key + api + nonce
-        $nonce = UUID::v3(md5($auth['app_key'] . $api . time()), Auth::rand_chars());
+            $sign = Sign::gen($api, request()->all(), $auth['app_secret']);
 
-        $sign = Sign::gen($api, request()->all(), $auth['app_secret']);
+            $headers = [
+                'x-ca-key'               => $auth['app_key'],
+                'x-ca-signature-method'  => 'HmacSHA256',
+                'x-ca-signature'         => $sign,
+                'x-ca-timestamp'         => time(),
+                'x-ca-signature-headers' => 'x-ca-key,x-ca-signature-method,x-ca-signature,x-ca-timestamp,x-ca-signature-headers,x-ca-nonce',
+                'x-ca-nonce'             => $nonce,
+            ];
 
-        $headers = [
-            'x-ca-key'               => $auth['app_key'],
-            'x-ca-signature-method'  => 'HmacSHA256',
-            'x-ca-signature'         => $sign,
-            'x-ca-timestamp'         => time(),
-            'x-ca-signature-headers' => 'x-ca-key,x-ca-signature-method,x-ca-signature,x-ca-timestamp,x-ca-signature-headers,x-ca-nonce',
-            'x-ca-nonce'             => $nonce,
-        ];
-
-        return response()->json(['msg' => $headers, 'code' => 'ok'])->header('x-ca-error-message', '');
+            return response()->json(['msg' => $headers, 'code' => 'ok'])->header('x-ca-error-message', '');
+        } else {
+            return response()->json(['msg' => 'invalid ip', 'code' => 'ok'])->header('x-ca-error-message', 'invalid ip');
+        }
     }
 
     //
