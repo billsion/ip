@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\{Sign, UUID};
+use App\Helpers\Sign;
+use App\Helpers\UUID;
 use App\Models\Auth;
-use Illuminate\Http\{JsonResponse, Request};
-use Illuminate\Support\Facades\{Cache, URL};
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use ipip\db\City;
 
 class CkIPController extends Controller
@@ -26,13 +28,13 @@ class CkIPController extends Controller
      */
     public function check(Request $request): JsonResponse
     {
-        $sign    = base64_decode($request->headers->get('x-ca-signature'));
+        $sign = base64_decode($request->headers->get('x-ca-signature'));
         $app_key = $request->headers->get('x-ca-key');
-        $nonce   = $request->headers->get('x-ca-nonce');
+        $nonce = $request->headers->get('x-ca-nonce');
 
         // 判断 nonce 是否在有效期内
         // 如果请求的 nonce 不存在，设置 nonce
-        if (! Cache::store('redis')->has($nonce)) {
+        if (!Cache::store('redis')->has($nonce)) {
             Cache::store('redis')->set($nonce, time(), env('NONCE_VALID_DURATION'));
         } else {
             return response()->json(['msg' => 'invalid nonce', 'code' => 'ok'])
@@ -45,7 +47,7 @@ class CkIPController extends Controller
 
         if ($app = Auth::where('app_key', $app_key)->where('enabled', 1)->get()->toArray()) {
             //$api = 'http://127.0.0.1:8092/api/127.0.0.1'; //不包括 query params
-            $api = $_SERVER['APP_URL'] . $_SERVER['API'] . $request->route('ip');
+            $api = $_SERVER['APP_URL'].$_SERVER['API'].$request->route('ip');
             $request->merge(['ip' => $request->route('ip')]);
 
             // 计算当前的签名
@@ -76,9 +78,9 @@ class CkIPController extends Controller
         if ($ip = $request->get('ip', '')) {
             //计算 nonce
             //$api = 'http://127.0.0.1:8093/api/' . $ip; //不包括 query params
-            $api = $_SERVER['APP_URL'] . $_SERVER['API'] . $ip;
+            $api = $_SERVER['APP_URL'].$_SERVER['API'].$ip;
             // app key + api + nonce
-            $nonce = UUID::v3(md5($auth['app_key'] . $api . time()), Auth::rand_chars());
+            $nonce = UUID::v3(md5($auth['app_key'].$api.time()), Auth::rand_chars());
 
             $sign = Sign::gen($api, request()->all(), $auth['app_key'], $auth['app_secret']);
 

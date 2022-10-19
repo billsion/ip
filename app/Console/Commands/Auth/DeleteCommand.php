@@ -36,10 +36,10 @@ class DeleteCommand extends Command
         if ($auth = Auth::where('name', $name)->get()->toArray()) {
             if ($this->confirm("确认要删除名为 $name 的 Auth 吗？")) {
                 Auth::where('name', $name)->delete();
-                $this->info($name . ' 已成功删除');
+                $this->info($name.' 已成功删除');
             }
         } else {
-            $this->error('Auth 名' . $name . '不存在');
+            $this->error('Auth 名'.$name.'不存在');
         }
     }
 }

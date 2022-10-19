@@ -27,23 +27,23 @@ class Authenticate
     /**
      * 作简单的请求头格式判断.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string|null  $guard
+     * @param \Illuminate\Http\Request $request
+     * @param string|null              $guard
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        $headers      = $request->headers;
+        $headers = $request->headers;
         $sign_headers = env('APP_SIGN_HEADERS');
 
         $sign_headers = explode(',', $sign_headers);
 
         // 如果请求头中缺少 .env 文件中设定的 APP_SIGN_HEADERS 值，直接返回
         foreach ($sign_headers as $_key => $_header) {
-            if (! $headers->has($_header)) {
+            if (!$headers->has($_header)) {
                 return response([
-                    'msg'  => 'invalid request: missing ' . $_header,
+                    'msg'  => 'invalid request: missing '.$_header,
                     'code' => 'err',
-                ], 200, ['x-ca-error-message' => 'invalid request: missing ' . $_header]);
+                ], 200, ['x-ca-error-message' => 'invalid request: missing '.$_header]);
             }
         }
 
