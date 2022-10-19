@@ -19,7 +19,7 @@ class ToggleCommand extends Command
      */
     protected $signature = 'auth:toggle {name}';
 
-    protected $status = [ '0' => '关闭', '1' => '开启'];
+    protected $status = ['0' => '关闭', '1' => '开启'];
 
     /**
      * The console command description.
@@ -37,11 +37,11 @@ class ToggleCommand extends Command
 
         if ($auth = Auth::where('name', $name)->get()->toArray()) {
             Auth::where('name', $name)->update([
-                'enabled' => ! $auth[0]['enabled'],
+                'enabled' => !$auth[0]['enabled'],
             ]);
-            $this->info($name . ' 已成功切换为 ' . $this->status[! $auth[0]['enabled']] . ' 状态');
+            $this->info($name.' 已成功切换为 '.$this->status[!$auth[0]['enabled']].' 状态');
         } else {
-            $this->error('Auth 名' . $name . '不存在');
+            $this->error('Auth 名'.$name.'不存在');
         }
     }
 }

@@ -33,7 +33,7 @@ class ListCommand extends Command
      */
     public function handle()
     {
-        $auth = new Auth;
+        $auth = new Auth();
         if ($name = $this->argument('name')) {// 指明参数显示该参数对应的 name
             $auth = $auth->where('name', $name);
             $this->table(

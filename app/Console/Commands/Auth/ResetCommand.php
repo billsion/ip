@@ -39,9 +39,9 @@ class ResetCommand extends Command
             Auth::where('name', $name)->update([
                 'app_secret' => $app_secret,
             ]);
-            $this->info($name . ' 重置成功, Secret 为' . $app_secret);
+            $this->info($name.' 重置成功, Secret 为'.$app_secret);
         } else {
-            $this->error('Auth 名' . $name . '不存在');
+            $this->error('Auth 名'.$name.'不存在');
         }
     }
 }

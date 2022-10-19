@@ -10,12 +10,12 @@ class IPValidationMiddleware
     /**
      * 作简单的 IP 格式判断.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      */
     public function handle($request, Closure $next)
     {
         $ipaddress = $request->route('ip');
-        $data      = ['ip' => $ipaddress];
+        $data = ['ip' => $ipaddress];
         $validator = Validator::make($data, [
             'ip' => ['required', 'ip'],
         ]);

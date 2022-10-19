@@ -31,16 +31,16 @@ class NonceCommand extends Command
      */
     public function handle()
     {
-        $name  = $this->argument('name');
+        $name = $this->argument('name');
         $nonce = $this->argument('nonce');
 
         if ($auth = Auth::where('name', $name)->get()->toArray()) {
             Auth::where('name', $name)->update([
                 'nonce_throttle' => $nonce,
             ]);
-            $this->info('Auth ' . $name . '的 nonce 现在为 ' . $nonce);
+            $this->info('Auth '.$name.'的 nonce 现在为 '.$nonce);
         } else {
-            $this->error('Auth 名' . $name . '不存在');
+            $this->error('Auth 名'.$name.'不存在');
         }
     }
 }

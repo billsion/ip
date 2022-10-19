@@ -38,7 +38,7 @@ class NewCommand extends Command
         $date_time = (new Carbon())->toDateTimeString();
 
         if (Auth::where('name', $name)->get()->toArray()) {
-            $this->error('Auth 名' . $name . '已存在，无法添加');
+            $this->error('Auth 名'.$name.'已存在，无法添加');
         } else {
             Auth::insert([
                 'name'           => $name,
@@ -51,7 +51,7 @@ class NewCommand extends Command
                 'updated_at'     => $date_time,
             ]);
 
-            $this->info('Auth 名 ' . $name . '添加成功');
+            $this->info('Auth 名 '.$name.'添加成功');
         }
     }
 }
